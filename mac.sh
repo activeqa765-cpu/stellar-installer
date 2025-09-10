@@ -28,7 +28,7 @@ check_git_installed() {
     fi
 }
 
-## Function to install Git using Xcode Command Line Tools (PROPERLY)
+## Function to install Git using Xcode Command Line Tools (SIMPLIFIED)
 install_git() {
     echo "Installing Git using Xcode Command Line Tools..."
 
@@ -46,7 +46,7 @@ install_git() {
         echo "Waiting for Xcode Command Line Tools installation to complete..."
         while ! xcode-select -p &>/dev/null; do
             sleep 5
-            echo "Still waiting.. Please complete the installation."
+            echo "Still waiting... Please complete the installation."
         done
     fi
 
@@ -54,18 +54,6 @@ install_git() {
     if type -p git >/dev/null 2>&1; then
         GIT_VERSION=$(git --version 2>&1 | awk '{print $3}')
         echo "Git installed successfully (version $GIT_VERSION)"
-
-        # Basic Git configuration
-        echo "Setting up basic Git configuration..."
-        read -p "Enter your Git user name: " git_username
-        read -p "Enter your Git email: " git_email
-
-        git config --global user.name "$git_username"
-        git config --global user.email "$git_email"
-        git config --global init.defaultBranch main
-        git config --global pull.rebase true
-
-        echo "Git configuration completed successfully!"
     else
         echo "Error: Git installation failed through Xcode Command Line Tools"
         echo "Please install Git manually: https://git-scm.com/download/mac"
@@ -111,12 +99,12 @@ install_maven() {
     echo "export M2_HOME=\$HOME/maven/apache-maven-${MAVEN_VERSION}" >> ~/.zshrc
     echo "export MAVEN_HOME=\$HOME/maven/apache-maven-${MAVEN_VERSION}" >> ~/.zshrc
     echo 'export PATH=$M2_HOME/bin:$PATH' >> ~/.zshrc
-    
+
     # Apply changes immediately
     export M2_HOME="$HOME/maven/apache-maven-${MAVEN_VERSION}"
     export MAVEN_HOME="$HOME/maven/apache-maven-${MAVEN_VERSION}"
     export PATH=$M2_HOME/bin:$PATH
-    
+
     echo "Maven installed successfully"
 }
 
@@ -195,7 +183,7 @@ if ! check_jdk_installed; then
     # Unmount and cleanup
     hdiutil detach "$TMP_MOUNT"
     rm "$JDK_DMG"
-    
+
     # Configure Java Home
     echo "Configuring JAVA_HOME..."
     echo "export JAVA_HOME=\$(/usr/libexec/java_home -v 21)" >> ~/.zshrc
@@ -231,11 +219,6 @@ echo "Java version:"
 java -version
 echo "Maven version:"
 mvn -v
-
-echo ""
-echo "=== GIT CONFIGURATION SUMMARY ==="
-echo "Git user name: $(git config user.name)"
-echo "Git user email: $(git config user.email)"
 
 echo ""
 echo "=== PROJECT INFORMATION ==="
