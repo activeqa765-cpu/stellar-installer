@@ -184,7 +184,7 @@ echo.
 
 :: Download Maven
 echo Downloading Maven...
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.zip', 'maven.zip')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://downloads.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.zip', 'maven.zip')"
 
 if not exist "maven.zip" (
     echo Failed to download Maven
