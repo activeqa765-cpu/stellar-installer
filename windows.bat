@@ -228,6 +228,19 @@ for /f "delims=" %%g in ('where git') do (
     echo.
     echo Git Path: %%~dpg
 )
+
+:: Ensure Git path is added to dev_paths even if already installed
+if not defined git_path_added (
+    for /f "delims=" %%g in ('where git 2^>nul') do (
+        set "git_dir=%%~dpg"
+        :: Check if this path is already in dev_paths
+        echo %dev_paths% | find /i "%%~dpg" >nul
+        if errorlevel 1 (
+            set "dev_paths=%dev_paths%;%%~dpg"
+        )
+    )
+    set "git_path_added=1"
+)
 goto :eof
 
 :installGit
@@ -259,6 +272,16 @@ if %errorlevel% neq 0 (
     :: If Git not in PATH, try to find and add it
     if exist "C:\Program Files\Git\bin\git.exe" (
         set "dev_paths=%dev_paths%;C:\Program Files\Git\bin"
+    )
+) else (
+    :: If Git is already in PATH, make sure we add it to dev_paths too
+    for /f "delims=" %%g in ('where git 2^>nul') do (
+        set "git_dir=%%~dpg"
+        :: Check if this path is already in dev_paths
+        echo %dev_paths% | find /i "%%~dpg" >nul
+        if errorlevel 1 (
+            set "dev_paths=%dev_paths%;%%~dpg"
+        )
     )
 )
 
