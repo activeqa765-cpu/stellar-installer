@@ -6,6 +6,10 @@ color 0A
 
 cls
 
+:: Change to script directory to avoid System32 issues
+
+cd /d "%~dp0"
+
 :: Function to check admin rights
 
 :checkAdmin
@@ -122,7 +126,7 @@ if %git_installed% equ 1 (
 
     echo Please install Git manually first, then run this script again.
 
-    echo Git installer has been downloaded to: %current_dir%\git-installer.exe
+    echo Git installer location: %current_dir%\git-installer.exe
 
     echo.
 
@@ -162,7 +166,7 @@ echo Next steps:
 
 if %git_installed% equ 0 (
 
-    echo 1. Run git-installer.exe to install Git
+    echo 1. Run git-installer.exe from current folder to install Git
 
     echo 2. Close and reopen Command Prompt
 
@@ -494,43 +498,21 @@ echo.
 
 echo Opening Git installer...
 
-start "" "git-installer.exe"
+start "" "%current_dir%\git-installer.exe"
 
 echo.
 
-echo Press any key to continue after Git installation is complete...
+echo IMPORTANT: Please complete the Git installation wizard that just opened.
+
+echo After installation is complete, close this window and run the script again.
+
+echo.
+
+echo Press any key to exit this script...
 
 pause >nul
 
-:: Check if Git was installed after manual installation
-
-call :checkGit
-
-if %git_installed% equ 1 (
-
-    echo.
-
-    echo Git installed successfully!
-
-    call :showGitInfo
-
-) else (
-
-    echo.
-
-    echo Git installation not detected. Please make sure to:
-
-    echo 1. Complete the Git installation
-
-    echo 2. Select "Add Git to PATH" option
-
-    echo 3. Close and reopen Command Prompt
-
-    echo 4. Run this script again
-
-)
-
-goto :eof
+exit
 
 :cloneStellarProject
 
