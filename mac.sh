@@ -61,18 +61,6 @@ install_git() {
     fi
 }
 
-## Function to check if any JDK is already installed
-check_jdk_installed() {
-    if type -p java >/dev/null 2>&1; then
-        JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
-        echo "Java is already installed (version $JAVA_VERSION)"
-        return 0
-    else
-        echo "Java is not installed"
-        return 1
-    fi
-}
-
 ## Function to check if Maven is already installed
 check_maven_installed() {
     if type -p mvn >/dev/null 2>&1; then
@@ -106,6 +94,39 @@ install_maven() {
     export PATH=$M2_HOME/bin:$PATH
 
     echo "Maven installed successfully"
+}
+
+## Function to install JDK 21 (FORCED INSTALLATION)
+install_jdk_21() {
+    echo "Installing JDK 21 for your Mac architecture..."
+    JDK_DMG="jdk-21.dmg"
+    TMP_MOUNT="/Volumes/JDK21_TEMP"
+
+    # Download JDK
+    echo "Downloading JDK from: $JDK_URL"
+    curl -L -o "$JDK_DMG" "$JDK_URL"
+
+    # Mount the DMG
+    echo "Mounting JDK installer..."
+    hdiutil attach "$JDK_DMG" -mountpoint "$TMP_MOUNT" -nobrowse
+
+    # Find the package file
+    PKG_FILE=$(find "$TMP_MOUNT" -name "*.pkg")
+
+    # Install JDK
+    echo "Installing JDK 21..."
+    sudo installer -pkg "$PKG_FILE" -target /
+
+    # Unmount and cleanup
+    hdiutil detach "$TMP_MOUNT"
+    rm "$JDK_DMG"
+
+    # Configure Java Home
+    echo "Configuring JAVA_HOME..."
+    echo "export JAVA_HOME=\$(/usr/libexec/java_home -v 21)" >> ~/.zshrc
+    echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.zshrc
+
+    echo "JDK 21 installed successfully"
 }
 
 ## Function to clone Stellar sample project with numbering
@@ -156,41 +177,9 @@ else
 fi
 
 echo ""
-echo "=== JDK INSTALLATION CHECK ==="
+echo "=== JDK INSTALLATION ==="
 detect_architecture
-
-## JDK 21 Installation (only if no Java is installed)
-if ! check_jdk_installed; then
-    echo "Installing JDK 21 for your Mac architecture..."
-    JDK_DMG="jdk-21.dmg"
-    TMP_MOUNT="/Volumes/JDK21_TEMP"
-
-    # Download JDK
-    echo "Downloading JDK from: $JDK_URL"
-    curl -L -o "$JDK_DMG" "$JDK_URL"
-
-    # Mount the DMG
-    echo "Mounting JDK installer..."
-    hdiutil attach "$JDK_DMG" -mountpoint "$TMP_MOUNT" -nobrowse
-
-    # Find the package file
-    PKG_FILE=$(find "$TMP_MOUNT" -name "*.pkg")
-
-    # Install JDK
-    echo "Installing JDK 21..."
-    sudo installer -pkg "$PKG_FILE" -target /
-
-    # Unmount and cleanup
-    hdiutil detach "$TMP_MOUNT"
-    rm "$JDK_DMG"
-
-    # Configure Java Home
-    echo "Configuring JAVA_HOME..."
-    echo "export JAVA_HOME=\$(/usr/libexec/java_home -v 21)" >> ~/.zshrc
-    echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.zshrc
-else
-    echo "Java is already installed, skipping JDK 21 installation..."
-fi
+install_jdk_21
 
 echo ""
 echo "=== MAVEN INSTALLATION ==="
