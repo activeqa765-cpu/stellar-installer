@@ -262,21 +262,11 @@ if %errorlevel% neq 0 (
     )
 )
 
-:: Configure Git
-echo Configuring Git...
-set /p git_username="Enter your Git user name: "
-set /p git_email="Enter your Git email: "
-
-git config --global user.name "%git_username%"
-git config --global user.email "%git_email%"
-git config --global init.defaultBranch main
-git config --global pull.rebase true
-
 :: Cleanup
 del "git-installer.exe"
 
 echo.
-echo Git installed and configured successfully!
+echo Git installed successfully!
 goto :eof
 
 :cloneStellarProject

@@ -16,6 +16,24 @@ detect_architecture() {
     fi
 }
 
+## Function to check if JDK 21 is already installed
+check_jdk_21_installed() {
+    # Check if Java is installed and if it's version 21
+    if type -p java >/dev/null 2>&1; then
+        JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d. -f1)
+        if [[ "$JAVA_VERSION" == "21" ]]; then
+            echo "JDK 21 is already installed"
+            return 0
+        else
+            echo "Found JDK version $JAVA_VERSION, but need JDK 21"
+            return 1
+        fi
+    else
+        echo "No JDK found"
+        return 1
+    fi
+}
+
 ## Function to check if Git is already installed
 check_git_installed() {
     if type -p git >/dev/null 2>&1; then
@@ -179,7 +197,11 @@ fi
 echo ""
 echo "=== JDK INSTALLATION ==="
 detect_architecture
-install_jdk_21
+if ! check_jdk_21_installed; then
+    install_jdk_21
+else
+    echo "JDK 21 is already installed, skipping installation..."
+fi
 
 echo ""
 echo "=== MAVEN INSTALLATION ==="
