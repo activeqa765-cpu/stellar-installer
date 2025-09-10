@@ -184,7 +184,11 @@ if %git_installed% equ 0 (
 
 echo.
 
-pause
+:: Final pause - user ko koi key press karne ko bolo exit karne ke liye
+
+echo Press any key to exit...
+
+pause >nul
 
 exit /b
 
