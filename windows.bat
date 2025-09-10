@@ -269,10 +269,7 @@ timeout /t 10 /nobreak >nul
 :: Add Git to PATH (Git usually adds itself to PATH during installation)
 where git >nul 2>&1
 if %errorlevel% neq 0 (
-    :: If Git not in PATH, try to find and add it
-    if exist "C:\Program Files\Git\bin\git.exe" (
         set "dev_paths=%dev_paths%;C:\Program Files\Git\bin"
-    )
 ) else (
     :: If Git is already in PATH, make sure we add it to dev_paths too
     for /f "delims=" %%g in ('where git 2^>nul') do (
