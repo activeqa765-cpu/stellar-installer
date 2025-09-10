@@ -46,7 +46,7 @@ install_git() {
         echo "Waiting for Xcode Command Line Tools installation to complete..."
         while ! xcode-select -p &>/dev/null; do
             sleep 5
-            echo "Still waiting... Please complete the installation."
+            echo "Still waiting.. Please complete the installation."
         done
     fi
 
