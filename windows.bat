@@ -82,7 +82,7 @@ if %git_installed% equ 1 (
 
 ) else (
 
-    call :installGit
+    call :installGitManual
 
 )
 
@@ -100,9 +100,33 @@ if defined dev_paths (
 
 )
 
-:: Clone Stellar project
+:: Clone Stellar project (only if Git is installed)
 
-call :cloneStellarProject
+call :checkGit
+
+if %git_installed% equ 1 (
+
+    call :cloneStellarProject
+
+) else (
+
+    echo.
+
+    echo **************************************
+
+    echo *    GIT NOT INSTALLED              *
+
+    echo **************************************
+
+    echo.
+
+    echo Please install Git manually first, then run this script again.
+
+    echo Git installer has been downloaded to: %current_dir%\git-installer.exe
+
+    echo.
+
+)
 
 echo.
 
@@ -132,21 +156,27 @@ if defined dev_paths echo Added to PATH: %dev_paths%
 
 echo.
 
-echo Project Information:
-
-echo Stellar project cloned to: %stellar_project_dir%
-
-echo.
-
 :: Show next steps
 
 echo Next steps:
 
-echo 1. Close and reopen Command Prompt for PATH changes to take effect
+if %git_installed% equ 0 (
 
-echo 2. cd stellar-sample-project
+    echo 1. Run git-installer.exe to install Git
 
-echo 3. mvn clean test
+    echo 2. Close and reopen Command Prompt
+
+    echo 3. Run this script again
+
+) else (
+
+    echo 1. Close and reopen Command Prompt for PATH changes to take effect
+
+    echo 2. cd stellar-sample-project
+
+    echo 3. mvn clean test
+
+)
 
 echo.
 
@@ -404,13 +434,13 @@ for /f "delims=" %%g in ('where git 2^>nul') do (
 
 goto :eof
 
-:installGit
+:installGitManual
 
 echo.
 
 echo **************************************
 
-echo *    INSTALLING GIT                  *
+echo *    DOWNLOADING GIT INSTALLER      *
 
 echo **************************************
 
@@ -418,81 +448,87 @@ echo.
 
 :: Download Git for Windows
 
-echo Downloading Git for Windows...
+echo Downloading Git for Windows installer...
 
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/git-for-windows/git/releases/download/v2.45.2.windows.1/Git-2.45.2-64-bit.exe', 'git-installer.exe')"
 
 if not exist "git-installer.exe" (
 
-    echo Failed to download Git
+    echo Failed to download Git installer
 
     goto :eof
 
 )
 
-:: Install Git silently with proper options
+echo.
 
-echo Installing Git...
+echo **************************************
 
-start /wait "" "git-installer.exe" /VERYSILENT /NORESTART /NOCANCEL /SP- /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"
+echo *    MANUAL GIT INSTALLATION        *
 
-:: Wait for installation to complete
-
-timeout /t 15 /nobreak >nul
-
-:: Add Git to PATH (Git usually adds itself to PATH during installation)
-
-where git >nul 2>&1
-
-if %errorlevel% neq 0 (
-
-    :: If Git not in PATH, try to find and add it
-
-    if exist "C:\Program Files\Git\bin\git.exe" (
-
-        set "dev_paths=%dev_paths%;C:\Program Files\Git\bin"
-
-    )
-
-    if exist "C:\Program Files (x86)\Git\bin\git.exe" (
-
-        set "dev_paths=%dev_paths%;C:\Program Files (x86)\Git\bin"
-
-    )
-
-) else (
-
-    :: If Git is already in PATH, make sure we add it to dev_paths too
-
-    for /f "delims=" %%g in ('where git 2^>nul') do (
-
-        set "git_dir=%%~dpg"
-
-        :: Remove trailing backslash
-
-        set "git_dir=!git_dir:~0,-1!"
-
-        :: Check if this path is already in dev_paths
-
-        echo %dev_paths% | find /i "!git_dir!" >nul
-
-        if errorlevel 1 (
-
-            set "dev_paths=%dev_paths%;!git_dir!"
-
-        )
-
-    )
-
-)
-
-:: Cleanup
-
-del "git-installer.exe"
+echo **************************************
 
 echo.
 
-echo Git installed successfully!
+echo Git installer has been downloaded.
+
+echo Please follow these steps:
+
+echo.
+
+echo 1. The Git installer will open automatically
+
+echo 2. Follow the installation wizard steps
+
+echo 3. Make sure to select "Add Git to PATH" during installation
+
+echo 4. Complete the installation
+
+echo 5. Close and reopen Command Prompt
+
+echo 6. Run this script again
+
+echo.
+
+:: Open Git installer for user to install manually
+
+echo Opening Git installer...
+
+start "" "git-installer.exe"
+
+echo.
+
+echo Press any key to continue after Git installation is complete...
+
+pause >nul
+
+:: Check if Git was installed after manual installation
+
+call :checkGit
+
+if %git_installed% equ 1 (
+
+    echo.
+
+    echo Git installed successfully!
+
+    call :showGitInfo
+
+) else (
+
+    echo.
+
+    echo Git installation not detected. Please make sure to:
+
+    echo 1. Complete the Git installation
+
+    echo 2. Select "Add Git to PATH" option
+
+    echo 3. Close and reopen Command Prompt
+
+    echo 4. Run this script again
+
+)
 
 goto :eof
 
