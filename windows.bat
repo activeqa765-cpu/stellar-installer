@@ -348,6 +348,16 @@ echo **************************************
 
 echo.
 
+:: Pehle existing Maven directory check karo aur delete karo
+
+if exist "C:\Program Files\apache-maven\apache-maven-3.9.11" (
+
+    echo Removing existing Maven installation...
+
+    rmdir /s /q "C:\Program Files\apache-maven\apache-maven-3.9.11" 2>nul
+
+)
+
 :: Download Maven
 
 echo Downloading Maven...
@@ -372,7 +382,11 @@ if not exist "C:\Program Files\apache-maven" (
 
 )
 
-powershell -Command "Expand-Archive -Path 'maven.zip' -DestinationPath 'C:\Program Files\apache-maven'"
+:: Force extract with overwrite
+
+echo Extracting Maven files...
+
+powershell -Command "Expand-Archive -Path 'maven.zip' -DestinationPath 'C:\Program Files\apache-maven' -Force"
 
 :: Add Maven bin to PATH
 
@@ -386,9 +400,25 @@ for /d %%m in ("C:\Program Files\apache-maven\apache-maven-*") do (
 
 del "maven.zip"
 
-echo.
+:: Verify Maven installation
 
-echo Maven installed successfully!
+where mvn >nul 2>&1
+
+if %errorlevel% equ 0 (
+
+    echo.
+
+    echo Maven installed successfully!
+
+) else (
+
+    echo.
+
+    echo Maven installation completed but verification failed
+
+    echo Please check if Maven is working manually
+
+)
 
 goto :eof
 
