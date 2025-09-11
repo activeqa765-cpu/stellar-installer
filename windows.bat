@@ -359,14 +359,18 @@ echo *    CLONING STELLAR PROJECT         *
 echo **************************************
 echo.
 
+:: Pehle current directory mein wapas jao
+cd /d "!current_dir!"
+
 :: Purana project delete karo (agar exists hai to)
 if exist "!stellar_project_dir!" (
     echo Removing existing project...
     rmdir /s /q "!stellar_project_dir!" 2>nul
 )
 
-:: Naya project clone karo
+:: Naya project clone karo CURRENT DIRECTORY mein
 echo Cloning fresh Stellar sample project...
+echo Cloning to: !stellar_project_dir!
 git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git "!stellar_project_dir!"
 
 if !errorlevel! equ 0 (
@@ -378,6 +382,7 @@ if !errorlevel! equ 0 (
     echo Project structure:
     cd /d "!stellar_project_dir!"
     dir
+    cd /d "!current_dir!"
 ) else (
     echo.
     echo Error: Failed to clone project
