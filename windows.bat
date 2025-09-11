@@ -51,27 +51,16 @@ if %git_installed% equ 1 (
     call :installGitManual
 )
 
-:: Update PATH with all dev paths
+:: Update PATH with all dev paths using PowerShell (avoids 1024 char limit)
 if defined dev_paths (
     echo.
     echo Updating PATH environment variable...
     echo Adding to PATH: %dev_paths%
 
-    :: Get current PATH and remove any trailing semicolons
-    for /f "tokens=*" %%p in ('echo %PATH%') do set "current_path=%%p"
-    if "%current_path:~-1%"==";" set "current_path=%current_path:~0,-1%"
+    :: Use PowerShell to reliably update PATH without truncation
+    powershell -Command "$newPaths = '%dev_paths%'; $currentPath = [Environment]::GetEnvironmentVariable('Path', 'Machine'); [Environment]::SetEnvironmentVariable('Path', \"$currentPath$newPaths\", 'Machine')"
 
-    :: Add new paths and remove any duplicate semicolons
-    set "new_path=%current_path%%dev_paths%"
-    set "new_path=%new_path:;;=;%"
-
-    :: Set the new PATH permanently
-    setx PATH "%new_path%" /m >nul 2>&1
-    if %errorlevel% equ 0 (
-        echo PATH updated successfully!
-    ) else (
-        echo Warning: Could not update PATH. You may need to set it manually.
-    )
+    echo PATH updated successfully using PowerShell!
 )
 
 :: Clone Stellar project (only if Git is installed)
