@@ -325,7 +325,7 @@ if not exist "git-installer.exe" (
 
 echo.
 echo **************************************
-echo *    MANUAL GIT INSTALLATION        *
+echo *    GIT INSTALLATION        *
 echo **************************************
 echo.
 echo Git installer has been downloaded.
