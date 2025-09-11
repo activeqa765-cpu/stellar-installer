@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 title JDK 21, Maven & Git Installation Checker
 color 0A
 cls
@@ -29,7 +30,7 @@ set "git_path_added=0"
 
 :: Check Java Installation
 call :checkJava
-if %java_installed% equ 1 (
+if !java_installed! equ 1 (
     call :showJavaInfo
 ) else (
     call :installJava
@@ -37,7 +38,7 @@ if %java_installed% equ 1 (
 
 :: Check Maven Installation
 call :checkMaven
-if %maven_installed% equ 1 (
+if !maven_installed! equ 1 (
     call :showMavenInfo
 ) else (
     call :installMaven
@@ -45,7 +46,7 @@ if %maven_installed% equ 1 (
 
 :: Check Git Installation
 call :checkGit
-if %git_installed% equ 1 (
+if !git_installed! equ 1 (
     call :showGitInfo
 ) else (
     call :installGitManual
@@ -55,17 +56,17 @@ if %git_installed% equ 1 (
 if defined dev_paths (
     echo.
     echo Updating PATH environment variable...
-    echo Adding to PATH: %dev_paths%
+    echo Adding to PATH: !dev_paths!
 
     :: Use PowerShell to reliably update PATH without truncation
-    powershell -Command "$newPaths = '%dev_paths%'; $currentPath = [Environment]::GetEnvironmentVariable('Path', 'Machine'); [Environment]::SetEnvironmentVariable('Path', \"$currentPath$newPaths\", 'Machine')"
+    powershell -Command "$newPaths = '!dev_paths!'; $currentPath = [Environment]::GetEnvironmentVariable('Path', 'Machine'); [Environment]::SetEnvironmentVariable('Path', \"$currentPath$newPaths\", 'Machine')"
 
     echo PATH updated successfully using PowerShell!
 )
 
 :: Clone Stellar project (only if Git is installed)
 call :checkGit
-if %git_installed% equ 1 (
+if !git_installed! equ 1 (
     call :cloneStellarProject
 ) else (
     echo.
@@ -74,7 +75,7 @@ if %git_installed% equ 1 (
     echo **************************************
     echo.
     echo Please install Git manually first, then run this script again.
-    echo Git installer location: %current_dir%\git-installer.exe
+    echo Git installer location: !current_dir!\git-installer.exe
     echo.
 )
 
@@ -91,12 +92,12 @@ where git >nul 2>&1 && echo Git is working properly || echo Git not working prop
 echo.
 
 echo Environment variables set:
-if defined dev_paths echo Added to PATH: %dev_paths%
+if defined dev_paths echo Added to PATH: !dev_paths!
 echo.
 
 :: Show next steps
 echo Next steps:
-if %git_installed% equ 0 (
+if !git_installed! equ 0 (
     echo 1. Run git-installer.exe from current folder to install Git
     echo 2. Close and reopen Command Prompt
     echo 3. Run this script again
@@ -135,7 +136,7 @@ if not defined JAVA_HOME (
     for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-*" 2^>nul') do (
         set "jdk_path=C:\Program Files\Java\%%a\bin"
         echo Found JDK: %%a
-        set "dev_paths=%dev_paths%;!jdk_path!"
+        set "dev_paths=!dev_paths!;!jdk_path!"
     )
 )
 goto :eof
@@ -164,7 +165,7 @@ start /wait "" "jdk-21-installer.exe" /s
 for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-21*" 2^>nul') do (
     set "jdk_bin_path=C:\Program Files\Java\%%a\bin"
     echo Found JDK installation: %%a
-    set "dev_paths=%dev_paths%;!jdk_bin_path!"
+    set "dev_paths=!dev_paths!;!jdk_bin_path!"
 )
 
 :: Also set JAVA_HOME
@@ -176,7 +177,7 @@ for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-21*" 2^>nul') d
 
 :: Verify installation
 where java >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     echo.
     echo JDK 21 installed successfully!
 ) else (
@@ -210,7 +211,7 @@ if not defined MAVEN_HOME (
     for /f "tokens=*" %%m in ('dir /b /ad "C:\Program Files\apache-maven\apache-maven-*" 2^>nul') do (
         set "maven_bin_path=C:\Program Files\apache-maven\%%m\bin"
         echo Found Maven: %%m
-        set "dev_paths=%dev_paths%;!maven_bin_path!"
+        set "dev_paths=!dev_paths!;!maven_bin_path!"
 
         :: Also set MAVEN_HOME
         set "MAVEN_HOME=C:\Program Files\apache-maven\%%m"
@@ -256,7 +257,7 @@ powershell -Command "Expand-Archive -Path 'maven.zip' -DestinationPath 'C:\Progr
 for /d %%m in ("C:\Program Files\apache-maven\apache-maven-*") do (
     set "maven_bin_path=%%m\bin"
     echo Maven installed at: %%m
-    set "dev_paths=%dev_paths%;!maven_bin_path!"
+    set "dev_paths=!dev_paths!;!maven_bin_path!"
 
     :: Set MAVEN_HOME
     set "MAVEN_HOME=%%m"
@@ -269,7 +270,7 @@ del "maven.zip"
 
 :: Verify Maven installation
 where mvn >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     echo.
     echo Maven installed successfully!
 ) else (
@@ -298,9 +299,9 @@ for /f "delims=" %%g in ('where git 2^>nul') do (
     :: Remove trailing backslash
     set "git_dir=!git_dir:~0,-1!"
     :: Check if this path is already in dev_paths
-    echo %dev_paths% | find /i "!git_dir!" >nul
+    echo !dev_paths! | find /i "!git_dir!" >nul
     if errorlevel 1 (
-        set "dev_paths=%dev_paths%;!git_dir!"
+        set "dev_paths=!dev_paths!;!git_dir!"
         echo Added Git to PATH: !git_dir!
     )
 )
@@ -340,7 +341,7 @@ echo.
 
 :: Open Git installer for user to install manually
 echo Opening Git installer...
-start "" "%current_dir%\git-installer.exe"
+start "" "!current_dir!\git-installer.exe"
 
 echo.
 echo IMPORTANT: Please complete the Git installation wizard that just opened.
@@ -359,23 +360,23 @@ echo **************************************
 echo.
 
 :: Purana project delete karo (agar exists hai to)
-if exist "%stellar_project_dir%" (
+if exist "!stellar_project_dir!" (
     echo Removing existing project...
-    rmdir /s /q "%stellar_project_dir%" 2>nul
+    rmdir /s /q "!stellar_project_dir!" 2>nul
 )
 
 :: Naya project clone karo
 echo Cloning fresh Stellar sample project...
-git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git "%stellar_project_dir%"
+git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git "!stellar_project_dir!"
 
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     echo.
     echo Project cloned successfully!
-    echo Location: %stellar_project_dir%
+    echo Location: !stellar_project_dir!
     :: Show project structure
     echo.
     echo Project structure:
-    cd /d "%stellar_project_dir%"
+    cd /d "!stellar_project_dir!"
     dir
 ) else (
     echo.
