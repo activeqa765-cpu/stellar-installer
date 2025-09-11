@@ -25,7 +25,7 @@ check_jdk_21_installed() {
             echo "JDK 21 is already installed"
             return 0
         else
-            echo "Found JDK version $JAVA_VERSION, but need JDK 21"
+#            echo "Found JDK version $JAVA_VERSION, but need JDK 21"
             return 1
         fi
     else
