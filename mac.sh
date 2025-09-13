@@ -212,7 +212,7 @@ else
 fi
 
 echo ""
-echo "=== STELLAR PROJECT CLONING ==="
+echo "=== vSTELLAR PROJECT CLONING ==="
 ## Clone Stellar project
 clone_stellar_project
 
