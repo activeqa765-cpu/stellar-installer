@@ -355,7 +355,7 @@ exit
 :cloneStellarProject
 echo.
 echo **************************************
-echo *    CLONING STELLAR PROJECT         *
+echo *    CLONING vSTELLAR PROJECT         *
 echo **************************************
 echo.
 
@@ -363,24 +363,24 @@ echo.
 cd /d "!current_dir!"
 
 :: Purana project delete karo (agar exists hai to)
-if exist "!stellar_project_dir!" (
+if exist "stellar-sample-project" (
     echo Removing existing project...
-    rmdir /s /q "!stellar_project_dir!" 2>nul
+    rmdir /s /q "stellar-sample-project" 2>nul
 )
 
 :: Naya project clone karo CURRENT DIRECTORY mein
 echo Cloning fresh Stellar sample project...
-echo Cloning to: !stellar_project_dir!
-git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git "!stellar_project_dir!"
+echo Cloning to: !current_dir!\stellar-sample-project
+git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git
 
 if !errorlevel! equ 0 (
     echo.
     echo Project cloned successfully!
-    echo Location: !stellar_project_dir!
+    echo Location: !current_dir!\stellar-sample-project
     :: Show project structure
     echo.
     echo Project structure:
-    cd /d "!stellar_project_dir!"
+    cd /d "stellar-sample-project"
     dir
     cd /d "!current_dir!"
 ) else (
