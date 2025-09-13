@@ -25,7 +25,6 @@ check_jdk_21_installed() {
             echo "JDK 21 is already installed"
             return 0
         else
-#            echo "Found JDK version $JAVA_VERSION, but need JDK 21"
             return 1
         fi
     else
@@ -147,26 +146,26 @@ install_jdk_21() {
     echo "JDK 21 installed successfully"
 }
 
-## Function to clone Stellar sample project with numbering
+## Function to clone Stellar sample project into current directory
 clone_stellar_project() {
     PROJECT_URL="https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git"
-    BASE_DIR="$HOME"
+    CURRENT_DIR=$(pwd)
     BASE_NAME="stellar-sample-project"
 
-    echo "Cloning Stellar sample project..."
+    echo "Cloning Stellar sample project into current directory: $CURRENT_DIR"
 
     # Check if base directory already exists
-    if [ -d "$BASE_DIR/$BASE_NAME" ]; then
+    if [ -d "$CURRENT_DIR/$BASE_NAME" ]; then
         # Find the next available number
         COUNTER=1
-        while [ -d "$BASE_DIR/${BASE_NAME}-$COUNTER" ]; do
+        while [ -d "$CURRENT_DIR/${BASE_NAME}-$COUNTER" ]; do
             ((COUNTER++))
         done
 
-        CLONE_DIR="$BASE_DIR/${BASE_NAME}-$COUNTER"
+        CLONE_DIR="$CURRENT_DIR/${BASE_NAME}-$COUNTER"
         echo "Project directory already exists. Creating new directory: $CLONE_DIR"
     else
-        CLONE_DIR="$BASE_DIR/$BASE_NAME"
+        CLONE_DIR="$CURRENT_DIR/$BASE_NAME"
     fi
 
     # Clone the project
