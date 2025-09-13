@@ -4,9 +4,6 @@ title JDK 21, Maven & Git Installation Checker
 color 0A
 cls
 
-:: Change to script directory to avoid System32 issues
-cd /d "%~dp0"
-
 :: Function to check admin rights
 :checkAdmin
 net session >nul 2>&1
@@ -22,7 +19,7 @@ if %errorlevel% neq 0 (
     timeout /t 3 >nul
 )
 
-:: Initialize variables
+:: Initialize variables - Use current working directory, not script directory
 set "dev_paths="
 set "current_dir=%CD%"
 set "stellar_project_dir=%current_dir%\stellar-sample-project"
@@ -355,12 +352,9 @@ exit
 :cloneStellarProject
 echo.
 echo **************************************
-echo *    CLONING vSTELLAR PROJECT         *
+echo *    CLONING vvSTELLAR PROJECT         *
 echo **************************************
 echo.
-
-:: Pehle current directory mein wapas jao
-cd /d "!current_dir!"
 
 :: Purana project delete karo (agar exists hai to)
 if exist "stellar-sample-project" (
