@@ -355,7 +355,7 @@ exit
 :cloneStellarProject
 echo.
 echo **************************************
-echo *    CLONING STELLAR PROJECT         *
+echo *    CLONING STELLAR PROJECTs         *
 echo **************************************
 echo.
 
