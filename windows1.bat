@@ -162,56 +162,31 @@ echo Installing JDK 21...
 start /wait "" "jdk-21-installer.exe" /s
 
 :: Find and add Java bin to PATH
-set "jdk_installed=0"
 for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-21*" 2^>nul') do (
     set "jdk_bin_path=C:\Program Files\Java\%%a\bin"
-    echo Found JDK 21 installation: %%a
+    echo Found JDK installation: %%a
     set "dev_paths=!dev_paths!;!jdk_bin_path!"
-    set "jdk_installed=1"
 )
 
-:: Agar JDK 21 nahi mila to koi bhi latest JDK use karo
-if !jdk_installed! equ 0 (
-    for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-*" 2^>nul') do (
-        set "jdk_bin_path=C:\Program Files\Java\%%a\bin"
-        echo Found JDK installation: %%a
-        set "dev_paths=!dev_paths!;!jdk_bin_path!"
-        set "jdk_installed=1"
-    )
-)
-
-:: Also set JAVA_HOME (prefer JDK 21)
-set "jdk21_found=0"
+:: Also set JAVA_HOME
 for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-21*" 2^>nul') do (
     set "JAVA_HOME=C:\Program Files\Java\%%a"
     setx JAVA_HOME "!JAVA_HOME!" /m >nul 2>&1
     echo Set JAVA_HOME: !JAVA_HOME!
-    set "jdk21_found=1"
 )
-
-:: Agar JDK 21 ka JAVA_HOME set nahi ho saka to koi bhi JDK set karo
-if !jdk21_found! equ 0 (
-    for /f "tokens=*" %%a in ('dir /b /ad "C:\Program Files\Java\jdk-*" 2^>nul') do (
-        set "JAVA_HOME=C:\Program Files\Java\%%a"
-        setx JAVA_HOME "!JAVA_HOME!" /m >nul 2>&1
-        echo Set JAVA_HOME: !JAVA_HOME!
-        goto :jdk_home_set
-    )
-)
-:jdk_home_set
 
 :: Verify installation
 where java >nul 2>&1
 if !errorlevel! equ 0 (
     echo.
-    echo JDK installed successfully!
+    echo JDK 21 installed successfully!
 ) else (
     echo.
     echo JDK installation completed but verification failed
 )
 
 :: Cleanup
-del "jdk-21-installer.exe" 2>nul
+del "jdk-21-installer.exe"
 goto :eof
 
 :checkMaven
@@ -350,7 +325,7 @@ if not exist "git-installer.exe" (
 
 echo.
 echo **************************************
-echo *    MANUAL GIT INSTALLATION        *
+echo *    GIT INSTALLATION        *
 echo **************************************
 echo.
 echo Git installer has been downloaded.
@@ -388,24 +363,24 @@ echo.
 cd /d "!current_dir!"
 
 :: Purana project delete karo (agar exists hai to)
-if exist "!stellar_project_dir!" (
+if exist "stellar-sample-project" (
     echo Removing existing project...
-    rmdir /s /q "!stellar_project_dir!" 2>nul
+    rmdir /s /q "stellar-sample-project" 2>nul
 )
 
 :: Naya project clone karo CURRENT DIRECTORY mein
 echo Cloning fresh Stellar sample project...
-echo Cloning to: !stellar_project_dir!
-git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git "!stellar_project_dir!"
+echo Cloning to: !current_dir!\stellar-sample-project
+git clone https://asadrazamahmood@bitbucket.org/stellar2/stellar-sample-project.git
 
 if !errorlevel! equ 0 (
     echo.
     echo Project cloned successfully!
-    echo Location: !stellar_project_dir!
+    echo Location: !current_dir!\stellar-sample-project
     :: Show project structure
     echo.
     echo Project structure:
-    cd /d "!stellar_project_dir!"
+    cd /d "stellar-sample-project"
     dir
     cd /d "!current_dir!"
 ) else (
